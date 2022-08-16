@@ -1,83 +1,70 @@
-let pokemonName = document.querySelector('.pokemonName');
-let pokemonNumber = document.querySelector('.pokemonNumber');
-let pokemonImage = document.querySelector('.pokemonImage');
-
-let form = document.querySelector('.form');
-let inputSearch = document.querySelector('.inputSearch');
-
-let btnPrev = document.querySelector('.btn-prev');
-let btnNext = document.querySelector('.btn-next');
-
-let pokemonSpeed = document.querySelector('pokemonSpeed');
-
-let searchPokemon = 1;
 
 
 
-let fetchPokemon = async (pokemon) => {
+const pokemonCount = 13;
+var pokedex = {}; // {1 : {"name" : "bulbsaur", "img" : url, "type" : ["grass", "poison"], "desc" : "...."} }
 
-    let APIResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
-
-    if (APIResponse.status == 200) {
-        let data = await APIResponse.json();
-        return data;
+window.onload = async function() {
+    // getPokemon(1);
+    for (let i = 1; i <= pokemonCount; i++) {
+        await getPokemon(i);
+        //<div id="1" class="pokemon-name">BULBASAUR</div>
+        let pokemon = document.createElement("div");
+        pokemon.id = i;
+        pokemon.innerText = i.toString() + ". " + pokedex[i]["name"].toUpperCase();
+        pokemon.classList.add("pokemon-name");
+        pokemon.addEventListener("click", updatePokemon);
+        document.getElementById("pokemon-list").append(pokemon);
     }
+
+    document.getElementById("pokemon-description").innerText = pokedex[1]["desc"];
+
+    
 }
 
 
-let renderPokemon = async (pokemon) => {
+async function getPokemon(num) {
+    let url = "https://pokeapi.co/api/v2/pokemon/" + num.toString();
 
-    pokemonName.innerHTML = 'Buscando...';
-    pokemonNumber.innerHTML = '';
-
-
-    let data = await fetchPokemon(pokemon);
-
-    if (data) {
-        pokemonName.innerHTML = data.name;
-        pokemonNumber.innerHTML = data.id;
-        pokemonImage.src = data['sprites']['versions']['generation-v']['black-white']['animated']['front_default'];
-    } else {
-        pokemonName.innerHTML = 'Não encontrado';
-        pokemonNumber.innerHTML = '';
+    let res = await fetch(url);
+    let pokemon = await res.json();
 
 
-    }
+    let pokemonName = pokemon["name"];
+    
+    let pokemonType = pokemon["types"];
+    let pokemonImg = pokemon["sprites"]["versions"]["generation-v"]["black-white"]["animated"]["front_default"];
 
-}
+    res = await fetch(pokemon["species"]["url"]);
+    let pokemonDesc = await res.json();
 
-async function returnPokemon(pokemon) {
+ 
+    pokemonDesc = pokemonDesc["flavor_text_entries"][9]["flavor_text"];
 
-    if (data) {
-        pokemonName.innerHTML = data.name;
-        pokemonNumber.innerHTML = data.id;
-        pokemonSpeed.innerHTML = data['stats']['speed'];
-
-
-    }
+    pokedex[num] = {"name" : pokemonName, "img" : pokemonImg, "types" : pokemonType, "desc" : pokemonDesc};
 
 }
 
+function updatePokemon(){
+    document.getElementById("pokemon-img").src = pokedex[this.id]["img"];
+
+    //limpar tipo
+    let typesDiv = document.getElementById("pokemon-types");
+    while (typesDiv.firstChild) {
+        typesDiv.firstChild.remove();
+    }
+
+    //atualização tipo
+    let types = pokedex[this.id]["types"];
+    for (let i = 0; i < types.length; i++) {
+        let type = document.createElement("span");
+        type.innerText = types[i]["type"]["name"].toUpperCase();
+        type.classList.add("type-box");
+        type.classList.add(types[i]["type"]["name"]); //adds background color and font color
+        typesDiv.append(type);
+    }
+
+    
+}
 
 
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    renderPokemon(inputSearch.value.toLowerCase());
-    inputSearch.value = '';
-});
-
-
-
-btnPrev.addEventListener('click', () => {
-    alert('prev clicked')
-
-});
-
-btnNext.addEventListener('click', () => {
-    alert('next clicked')
-
-});
-
-
-renderPokemon(searchPokemon)
