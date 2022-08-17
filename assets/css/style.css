@@ -162,3 +162,10 @@ body {
   overflow-y: auto;
 }
 
+.pikapika{
+  position: absolute;
+  width: 10%;
+  left: 83%;
+  bottom: 10%;
+ 
+}
