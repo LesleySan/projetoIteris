@@ -35,7 +35,7 @@ async function getPokemon(num) {
     let pokemonDesc = await res.json();
 
  
-    pokemonDesc = pokemonDesc["flavor_text_entries"][9]["flavor_text"];
+    pokemonDesc = pokemonDesc;
 
     pokedex[num] = {"name" : pokemonName, "img" : pokemonImg, "types" : pokemonType, "desc" : pokemonDesc};
 
@@ -56,7 +56,7 @@ function updatePokemon(){
         let type = document.createElement("span");
         type.innerText = types[i]["type"]["name"].toUpperCase();
         type.classList.add("type-box");
-        type.classList.add(types[i]["type"]["name"]); //adds background color and font color
+        type.classList.add(types[i]["type"]["name"]); //adds background cor e fonte 
         typesDiv.append(type);
     }
 
